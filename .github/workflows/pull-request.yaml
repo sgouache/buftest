@@ -10,6 +10,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: bufbuild/buf-setup-action@v1
+      # Install `protoc` - needed to generate code
+      - uses: arduino/setup-protoc@v1
       - uses: bufbuild/buf-lint-action@v1
         with:
             input: "proto"
