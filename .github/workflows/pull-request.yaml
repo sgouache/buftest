@@ -23,7 +23,7 @@ jobs:
             against: "https://github.com/${GITHUB_REPOSITORY}.git#branch=main,ref=HEAD~1,subdir=proto"
       - name: Installing protoc-gen-go
         run: |
-          go get github.com/golang/protobuf/protoc-gen-go
+          go install github.com/golang/protobuf/protoc-gen-go
       - name: Build
         run: |
           buf mod update
