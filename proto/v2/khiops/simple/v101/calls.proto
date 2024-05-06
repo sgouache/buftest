@@ -1,0 +1,279 @@
+syntax = "proto2";
+
+package khiops.simple.v101;
+option java_package = "org.khiops.simple.v101";
+option go_package = "khiops.org/proto/khiops/simple/v101";
+import "khiops/simple/v101/basics.proto";
+
+// See the khiops-python docs to understand the function calls defined here
+//  https://khiopsml.github.io/khiops-python/core/generated/khiops.core.api.html
+
+message BuildDeployedDictionary {
+    required string dictionary_file_path = 1;
+    required string dictionary_name = 2;
+    required string output_dictionary_file_path = 3;
+}
+
+message BuildDictionaryFromDataTable {
+    required string data_table_path = 1;
+    required string output_dictionary_name = 2;
+    required string output_dictionary_file_path = 3;
+    optional bool detect_format = 6 [ default = true ];
+    optional bool header_line = 4 [ default = true ];
+    optional string field_separator = 5 [ default = "" ];
+}
+
+message BuildMultiTableDictionary {
+    required string dictionary_file_path = 1;
+    required string root_dictionary_name = 2;
+    required string secondary_table_variable_name = 3;
+}
+
+message CheckDatabase {
+    required string dictionary_file_path = 1;
+    required string dictionary_name = 2;
+    required string data_table_path = 3;
+    optional bool detect_format = 12 [ default = true ];
+    optional bool header_line = 4 [ default = true ];
+    optional string field_separator = 5 [ default = "" ];
+    optional double sample_percentage = 6 [ default = 100.0 ];
+    optional string sampling_mode = 7 [ default = "Include sample" ];
+    optional string selection_variable = 8 [ default = "" ];
+    optional string selection_value = 9 [ default = "" ];
+    map<string, string> additional_data_tables = 10 ;
+    optional int32 max_messages = 11 [ default = 20 ];
+}
+
+message DeployModel {
+    required string dictionary_file_path = 1;
+    required string dictionary_name = 2;
+    required string data_table_path = 3;
+    required string output_data_table_path = 4;
+    optional bool detect_format = 15 [ default = true ];
+    optional bool header_line = 5 [ default = true ];
+    optional string field_separator = 6 [ default = "" ];
+    optional double sample_percentage = 7 [ default = 100.0 ];
+    optional string sampling_mode = 8 [ default = "Include sample" ];
+    optional string selection_variable = 9 [ default = "" ];
+    optional string selection_value = 10 [ default = "" ];
+    map<string, string> additional_data_tables = 11 ;
+    optional bool output_header_line = 12 [ default = true ];
+    optional string output_field_separator = 13 [ default = "" ];
+    map<string, string> output_additional_data_tables = 14 ;
+}
+
+message DetectDataTableFormat {
+    required string data_table_path = 1;
+}
+
+message DetectDataTableFormatWithDictionary {
+    required string dictionary_file_path = 1;
+    required string dictionary_name = 2;
+    required string data_table_path = 3;
+}
+
+message EvaluatePredictor {
+    required string dictionary_file_path = 1;
+    required string train_dictionary_name = 2;
+    required string data_table_path = 3;
+    required string evaluation_report_path = 4;
+    optional bool detect_format = 13 [ default = true ];
+    optional bool header_line = 5 [ default = true ];
+    optional string field_separator = 6 [ default = "" ];
+    optional double sample_percentage = 7 [ default = 100.0 ];
+    optional string sampling_mode = 8 [ default = "Include sample" ];
+    optional string selection_variable = 9 [ default = "" ];
+    optional string selection_value = 10 [ default = "" ];
+    map<string, string> additional_data_tables = 11 ;
+    optional string main_target_value = 12 [ default = "" ];
+}
+
+message ExportDictionaryAsJson {
+    required string dictionary_file_path = 1;
+    required string json_dictionary_file_path = 2;
+}
+
+message ExtractClusters {
+    required string coclustering_file_path = 1;
+    required string cluster_variable = 2;
+    required string results_dir = 3;
+    required string clusters_file_name = 4;
+    optional int32 max_preserved_information = 5 [ default = 0 ];
+    optional int32 max_cells = 6 [ default = 0 ];
+}
+
+message ExtractKeysFromDataTable {
+    required string dictionary_file_path = 1;
+    required string dictionary_name = 2;
+    required string data_table_path = 3;
+    required string output_data_table_path = 4;
+    optional bool detect_format = 9 [ default = true ];
+    optional bool header_line = 5 [ default = true ];
+    optional string field_separator = 6 [ default = "" ];
+    optional bool output_header_line = 7 [ default = true ];
+    optional string output_field_separator = 8 [ default = "" ];
+}
+
+message PrepareCoclusteringDeployment {
+    required string dictionary_file_path = 1;
+    required string dictionary_name = 2;
+    required string coclustering_file_path = 3;
+    required string table_variable = 4;
+    required string deployed_variable_name = 5;
+    required string results_dir = 6;
+    optional int32 max_preserved_information = 7 [ default = 0 ];
+    optional int32 max_cells = 8 [ default = 0 ];
+    map<string, int32> max_part_numbers = 9 ;
+    optional bool build_cluster_variable = 10 [ default = true ];
+    optional bool build_distance_variables = 11 [ default = false ];
+    optional bool build_frequency_variables = 12 [ default = false ];
+    optional string variables_prefix = 13 [ default = "" ];
+    optional string results_prefix = 14 [ default = "" ];
+}
+
+message SimplifyCoclustering {
+    required string coclustering_file_path = 1;
+    required string simplified_coclustering_file_path = 2;
+    required string results_dir = 3;
+    optional int32 max_preserved_information = 4 [ default = 0 ];
+    optional int32 max_cells = 5 [ default = 0 ];
+    optional int32 max_total_parts = 8 [ default = 0 ];
+    map<string, int32> max_part_numbers = 6 ;
+    optional string results_prefix = 7 [ default = "" ];
+}
+
+message SortDataTable {
+    required string dictionary_file_path = 1;
+    required string dictionary_name = 2;
+    required string data_table_path = 3;
+    required string output_data_table_path = 4;
+    repeated string sort_variables = 5 ;
+    optional bool detect_format = 10 [ default = true ];
+    optional bool header_line = 6 [ default = true ];
+    optional string field_separator = 7 [ default = "" ];
+    optional bool output_header_line = 8 [ default = true ];
+    optional string output_field_separator = 9 [ default = "" ];
+}
+
+message TrainCoclustering {
+    required string dictionary_file_path = 1;
+    required string dictionary_name = 2;
+    required string data_table_path = 3;
+    repeated string coclustering_variables = 4;
+    required string results_dir = 5;
+    optional bool detect_format = 16 [ default = true ];
+    optional bool header_line = 6 [ default = true ];
+    optional string field_separator = 7 [ default = "" ];
+    optional double sample_percentage = 8 [ default = 100.0 ];
+    optional string sampling_mode = 9 [ default = "Include sample" ];
+    optional string selection_variable = 10 [ default = "" ];
+    optional string selection_value = 11 [ default = "" ];
+    map<string, string> additional_data_tables = 12 ;
+    optional string frequency_variable = 13 [ default = "" ];
+    optional int32 min_optimization_time = 14 [ default = 0 ];
+    optional string results_prefix = 15 [ default = "" ];
+}
+
+message TrainPredictor {
+    required string dictionary_file_path = 1;
+    required string dictionary_name = 2;
+    required string data_table_path = 3;
+    required string target_variable = 4;
+    required string results_dir = 5;
+    optional bool detect_format = 33 [ default = true ];
+    optional bool header_line = 6 [ default = true ];
+    optional string field_separator = 7 [ default = "" ];
+    optional double sample_percentage = 8 [ default = 100.0 ];
+    optional string sampling_mode = 9 [ default = "Include sample" ];
+    optional string test_database_mode = 34 [ default = "Complementary" ];
+    optional string selection_variable = 11 [ default = "" ];
+    optional string selection_value = 12 [ default = "" ];
+    map<string, string> additional_data_tables = 13 ;
+    optional string main_target_value = 14 [ default = "" ];
+    optional bool snb_predictor = 15 [ default = true ];
+    optional int32 univariate_predictor_number = 17 [ default = 0 ];
+    optional int32 max_evaluated_variables = 18 [ default = 0 ];
+    optional int32 max_selected_variables = 19 [ default = 0 ];
+    optional int32 max_constructed_variables = 20 [ default = 0 ];
+    repeated string construction_rules = 21 ;
+    optional int32 max_trees = 22 [ default = 10 ];
+    optional int32 max_pairs = 23 [ default = 0 ];
+    optional bool all_possible_pairs = 35 [ default = true ];
+    repeated Tuple_string_string specific_pairs = 36 ;
+    optional bool group_target_value = 25 [ default = false ];
+    optional string discretization_method = 26 [ default = "MODL" ];
+    optional int32 min_interval_frequency = 27 [ default = 0 ];
+    optional int32 max_intervals = 28 [ default = 0 ];
+    optional string grouping_method = 29 [ default = "MODL" ];
+    optional int32 min_group_frequency = 30 [ default = 0 ];
+    optional int32 max_groups = 31 [ default = 0 ];
+    optional string results_prefix = 32 [ default = "" ];
+}
+
+message TrainRecoder {
+    required string dictionary_file_path = 1;
+    required string dictionary_name = 2;
+    required string data_table_path = 3;
+    required string target_variable = 4;
+    required string results_dir = 5;
+    optional bool detect_format = 33 [ default = true ];
+    optional bool header_line = 6 [ default = true ];
+    optional string field_separator = 7 [ default = "" ];
+    optional double sample_percentage = 8 [ default = 100.0 ];
+    optional string sampling_mode = 9 [ default = "Include sample" ];
+    optional string selection_variable = 10 [ default = "" ];
+    optional string selection_value = 11 [ default = "" ];
+    map<string, string> additional_data_tables = 12 ;
+    optional int32 max_constructed_variables = 13 [ default = 0 ];
+    repeated string construction_rules = 14 ;
+    optional int32 max_trees = 15 [ default = 10 ];
+    optional int32 max_pairs = 16 [ default = 0 ];
+    optional bool all_possible_pairs = 34 [ default = true ];
+    repeated Tuple_string_string specific_pairs = 35 ;
+    optional bool group_target_value = 18 [ default = false ];
+    optional string discretization_method = 19 [ default = "MODL" ];
+    optional int32 min_interval_frequency = 20 [ default = 0 ];
+    optional int32 max_intervals = 21 [ default = 0 ];
+    optional bool informative_variables_only = 22 [ default = true ];
+    optional int32 max_variables = 23 [ default = 0 ];
+    optional bool keep_initial_categorical_variables = 24 [ default = true ];
+    optional bool keep_initial_numerical_variables = 25 [ default = true ];
+    optional string categorical_recoding_method = 26 [ default = "part Id" ];
+    optional string numerical_recoding_method = 27 [ default = "part Id" ];
+    optional string pairs_recoding_method = 28 [ default = "part Id" ];
+    optional string grouping_method = 29 [ default = "MODL" ];
+    optional int32 min_group_frequency = 30 [ default = 0 ];
+    optional int32 max_groups = 31 [ default = 0 ];
+    optional string results_prefix = 32 [ default = "" ];
+}
+
+// A call to the Khiops API
+message KhiopsApiCall {
+    oneof api_calls {
+        BuildDeployedDictionary build_deployed_dictionary = 1;
+        BuildDictionaryFromDataTable build_dictionary_from_data_table = 2;
+        BuildMultiTableDictionary build_multi_table_dictionary = 3;
+        CheckDatabase check_database = 4;
+        DeployModel deploy_model = 5;
+        DetectDataTableFormat detect_data_table_format = 6;
+        DetectDataTableFormatWithDictionary detect_data_table_format_with_dictionary = 7;
+        EvaluatePredictor evaluate_predictor = 8;
+        ExportDictionaryAsJson export_dictionary_as_json = 9;
+        ExtractClusters extract_clusters = 10;
+        ExtractKeysFromDataTable extract_keys_from_data_table = 11;
+        PrepareCoclusteringDeployment prepare_coclustering_deployment = 12;
+        SimplifyCoclustering simplify_coclustering = 13;
+        SortDataTable sort_data_table = 14;
+        TrainCoclustering train_coclustering = 15;
+        TrainPredictor train_predictor = 16;
+        TrainRecoder train_recoder = 17;
+    }
+}
+
+
+// A task to be executed by Khiops
+// It may be composed of one or more KhiopsApiCall's
+message KhiopsTask {
+    repeated KhiopsApiCall api_calls = 1;
+    optional KhiopsTaskOptions options = 2;
+}
