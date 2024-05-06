@@ -8,16 +8,16 @@ plugins:
     out: gen/go
     opt:
       - paths=source_relative
-  - name: openapiv2
-    out: gen/openapiv2
-    strategy: all
-    opt: 
-      - allow_merge=true
-      - merge_file_name=khiops
-      - openapi_naming_strategy=fqn
-      - disable_default_responses=true
-      - visibility_restriction_selectors=PUBLISHED # omit "INTERNAL" services entirely
-      - disable_service_tags=true
+  #- name: openapiv2
+  #  out: gen/openapiv2
+  #  strategy: all
+  #  opt: 
+  #    - allow_merge=true
+  #    - merge_file_name=khiops
+  #    - openapi_naming_strategy=fqn
+  #    - disable_default_responses=true
+  #    - visibility_restriction_selectors=PUBLISHED # omit "INTERNAL" services entirely
+  #    - disable_service_tags=true
   # web:
   - name: js
     out: gen/web
