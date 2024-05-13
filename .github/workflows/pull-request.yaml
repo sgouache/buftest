@@ -33,8 +33,9 @@ jobs:
         id: cache-protobuf
         uses: actions/cache@v4
         with:
-          path: ${{ github.workspace }}/protobuf
+          path: protobuf
           key: ${{ runner.os }}-protobuf
+          save-always: 'true'
 
       - name: Build protobuf library
         if: steps.cache-protobuf.outputs.cache-hit != 'true'
