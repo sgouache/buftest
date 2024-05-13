@@ -35,17 +35,24 @@ jobs:
         with:
           path: protobuf
           key: ${{ runner.os }}-protobuf
+
       - name: Build protobuf library
         if: steps.cache-protobuf.outputs.cache-hit != 'true'
         run: |
+          git clone https://github.com/abseil/abseil-cpp.git
+          cd abseil-cpp
+          mkdir build && cd build
+          cmake -DABSL_BUILD_TESTING=OFF -DCMAKE_CXX_STANDARD=14 ..
+          make
+          sudo make install
+          cd ~
+
           git clone https://github.com/protocolbuffers/protobuf.git
           cd protobuf
           git submodule update --init --recursive
-          ./autogen.sh
-          ./autogen.sh
-          ./configure
+          cmake . -DCMAKE_CXX_STANDARD=14
           make
-          make check           
+
       - name: Install protobuf library
         run: |
           cd protobuf
