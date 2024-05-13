@@ -31,9 +31,9 @@ jobs:
 
       - name: Cache protobuf library
         id: cache-protobuf
-        uses: actions/cache@v1
+        uses: actions/cache@v4
         with:
-          path: protobuf
+          path: ${{ github.workspace }}/protobuf
           key: ${{ runner.os }}-protobuf
 
       - name: Build protobuf library
@@ -52,6 +52,7 @@ jobs:
           git submodule update --init --recursive
           cmake . -DCMAKE_CXX_STANDARD=14
           make
+          cd ~
 
       - name: Install protobuf library
         run: |
