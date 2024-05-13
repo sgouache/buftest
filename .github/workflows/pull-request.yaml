@@ -45,17 +45,19 @@ jobs:
           cmake -DABSL_BUILD_TESTING=OFF -DCMAKE_CXX_STANDARD=14 ..
           make
           sudo make install
-          cd ~
+          cd ../../
 
           git clone https://github.com/protocolbuffers/protobuf.git
           cd protobuf
           git submodule update --init --recursive
           cmake . -DCMAKE_CXX_STANDARD=14
           make
-          cd ~
+          sudo make install
+          cd ..
 
       - name: Install protobuf library
         run: |
+          ls -l
           cd protobuf
           sudo make install
           sudo ldconfig  
