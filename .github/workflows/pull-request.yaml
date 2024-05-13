@@ -24,6 +24,7 @@ jobs:
       - name: Installing protoc-gen-go
         run: |
           go install github.com/golang/protobuf/protoc-gen-go@latest
+          go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest
       - name: Build
         run: |
           buf mod update
