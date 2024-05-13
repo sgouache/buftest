@@ -43,6 +43,7 @@ jobs:
 
           git clone https://github.com/protocolbuffers/protobuf.git
           cd protobuf
+          git checkout v26.1
           git submodule update --init --recursive
           cmake . -DCMAKE_CXX_STANDARD=14
           make
