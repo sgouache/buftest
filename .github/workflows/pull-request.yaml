@@ -58,7 +58,9 @@ jobs:
           sudo ldconfig  
 
       - name: Generate
+        shell: bash
         run: |
+          export PATH=$PATH:$(go env GOPATH)/bin
           go install github.com/golang/protobuf/protoc-gen-go@latest
           go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest
           buf mod update
