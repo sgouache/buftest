@@ -22,10 +22,10 @@ plugins:
       - visibility_restriction_selectors=PUBLISHED # omit "INTERNAL" services entirely
       - disable_service_tags=true
   # web:
-  - name: js
-    out: gen/web
-    opt:
-      - import_style=commonjs,binary
+  # - name: js
+  #   out: gen/web
+  #   opt:
+  #     - import_style=commonjs,binary
 #managed:
 #  enabled: true
 
