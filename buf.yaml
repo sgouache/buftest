@@ -1,7 +1,24 @@
-version: v1
-breaking:
-  use:
-    - FILE
-lint:
-  use:
-    - DEFAULT
+version: v2
+
+modules:
+  - path: proto
+    lint:
+      use:
+        - DEFAULT
+      except:
+        - FIELD_NOT_REQUIRED
+        - PACKAGE_NO_IMPORT_CYCLE
+      ignore:
+        - proto/google
+      ignore_only:
+        MESSAGE_PASCAL_CASE:
+          - proto/khiops/v101/basics.proto
+      disallow_comment_ignores: true
+    breaking:
+      use:
+        - FILE
+      except:
+        - EXTENSION_NO_DELETE
+        - FIELD_SAME_DEFAULT
+deps:
+  - buf.build/googleapis/googleapis

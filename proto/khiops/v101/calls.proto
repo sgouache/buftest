@@ -1,12 +1,86 @@
 syntax = "proto2";
 
-package khiops.simple.v101;
-option java_package = "org.khiops.simple.v101";
-option go_package = "khiops.org/proto/khiops/simple/v101";
-import "khiops/simple/v101/basics.proto";
+package khiops.v101;
+option java_package = "org.khiops.v101";
+option go_package = "khiops.org/proto/khiops/v101";
+import "khiops/v101/basics.proto";
 
 // See the khiops-python docs to understand the function calls defined here
 //  https://khiopsml.github.io/khiops-python/core/generated/khiops.core.api.html
+
+message Tuple {
+    required string t1 = 1;
+    required string t2 = 2;
+} 
+
+message OperationA{
+    repeated Tuple table = 1;
+}
+
+message TupleAlt {
+    oneof t1 {
+        string t1_value = 1;
+        bytes t1_bytevalue = 2;
+    }
+    oneof t2 {
+        string t2_value = 3;
+        bytes t2_bytevalue = 4;
+    }
+}
+
+message OperationB{
+    repeated TupleAlt table = 1;
+}
+
+message DatapathParams {
+    required StringLike data_path = 1;
+    required StringLike file_path = 2;
+}
+
+message PairParam {
+    oneof t1 {
+        string pair_string_param1 = 1;
+        bytes pair_string_param1_byte = 2;
+    }
+    oneof t2 {
+        string pair_string_param2 = 3;
+        bytes pair_string_param2_byte = 4;
+    }
+}
+
+message SingletonParam {
+    oneof t1 {
+        string singleton_string_param = 1;
+        bytes singleton_string_param_byte = 2;
+    }
+}
+
+message TrainPredictorParams {
+    required string string_param = 1;
+    required StringLike stringlike_param = 2;
+    required int32 int_param = 3;
+    required bool bool_param = 4;
+    required double double_param = 5;
+
+    repeated PairParam pair_param = 41;
+    repeated SingletonParam singleton_param = 42;
+
+    repeated StringLike vector_param = 44;
+
+    map<string, string> dict_param = 53 ;
+    map<int64, StringLike> stringlike_dict_param = 54;
+}
+
+message StringLike {
+    oneof t1 {
+        string value = 1;
+        bytes bytevalue = 2;
+    }
+}
+
+message NTuple {
+    repeated StringLike t = 1;
+}
 
 message BuildDeployedDictionary {
     required string dictionary_file_path = 1;
