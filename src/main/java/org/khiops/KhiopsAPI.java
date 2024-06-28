@@ -30,7 +30,7 @@ public class KhiopsAPI {
         .setByteDictionaryFilePath(ByteString.copyFrom("Whatever you want!".getBytes()))
         .setDictionaryName("xxx")
         .setDataTablePath("zzz")  
-    .setByteTargetVariable(ByteString.copyFrom(new byte[] { (byte)75, (byte)233, (byte)107, (byte)233 }))
+        .setByteTargetVariable(ByteString.copyFrom(new byte[] { (byte)75, (byte)233, (byte)107, (byte)233 }))
         .setByteResultsDir(ByteString.copyFrom("xxx".getBytes()))
         .addAdditionalDataTable(
             DatapathParam.newBuilder()
