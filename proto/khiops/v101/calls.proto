@@ -32,19 +32,14 @@ message OperationB{
     repeated TupleAlt table = 1;
 }
 
-message DatapathParams {
-    required StringLike data_path = 1;
-    required StringLike file_path = 2;
-}
-
 message PairParam {
     oneof t1 {
         string pair_string_param1 = 1;
-        bytes pair_string_param1_byte = 2;
+        bytes byte_pair_string_param1 = 2;
     }
     oneof t2 {
         string pair_string_param2 = 3;
-        bytes pair_string_param2_byte = 4;
+        bytes byte_pair_string_param2 = 4;
     }
 }
 
@@ -55,12 +50,33 @@ message SingletonParam {
     }
 }
 
+message DatapathParam {
+    oneof t1 {
+        string data_path = 1;
+        bytes byte_data_path = 2;
+    }
+    oneof t2 {
+        string file_path = 3;
+        bytes byte_file_path = 4;
+    }
+}
+
+message StringLike {
+    oneof t1 {
+        string value = 1;
+        bytes byte_value = 2;
+    }
+}
+
 message TrainPredictorParams {
+
+    repeated DatapathParam data_path = 4;
+
     required string string_param = 1;
     required StringLike stringlike_param = 2;
     required int32 int_param = 3;
-    required bool bool_param = 4;
-    required double double_param = 5;
+    required bool bool_param = 6;
+    required double double_param = 7;
 
     repeated PairParam pair_param = 41;
     repeated SingletonParam singleton_param = 42;
@@ -69,14 +85,10 @@ message TrainPredictorParams {
 
     map<string, string> dict_param = 53 ;
     map<int64, StringLike> stringlike_dict_param = 54;
+    optional string optional_string_param = 60 [ default = "toto" ];
 }
 
-message StringLike {
-    oneof t1 {
-        string value = 1;
-        bytes bytevalue = 2;
-    }
-}
+
 
 message NTuple {
     repeated StringLike t = 1;
@@ -248,40 +260,66 @@ message TrainCoclustering {
     optional string results_prefix = 15 [ default = "" ];
 }
 
+// TODO reecrire pour avoir des oneof dans la structure racine pour tous les stringlike
+message ConstructionRule {
+    required string rule = 1;
+}
+
 message TrainPredictor {
-    required string dictionary_file_path = 1;
-    required string dictionary_name = 2;
-    required string data_table_path = 3;
-    required string target_variable = 4;
-    required string results_dir = 5;
-    optional bool detect_format = 33 [ default = true ];
-    optional bool header_line = 6 [ default = true ];
-    optional string field_separator = 7 [ default = "" ];
-    optional double sample_percentage = 8 [ default = 100.0 ];
-    optional string sampling_mode = 9 [ default = "Include sample" ];
-    optional string test_database_mode = 34 [ default = "Complementary" ];
-    optional string selection_variable = 11 [ default = "" ];
-    optional string selection_value = 12 [ default = "" ];
-    map<string, string> additional_data_tables = 13 ;
-    optional string main_target_value = 14 [ default = "" ];
-    optional bool snb_predictor = 15 [ default = true ];
-    optional int32 univariate_predictor_number = 17 [ default = 0 ];
-    optional int32 max_evaluated_variables = 18 [ default = 0 ];
-    optional int32 max_selected_variables = 19 [ default = 0 ];
-    optional int32 max_constructed_variables = 20 [ default = 0 ];
-    repeated string construction_rules = 21 ;
-    optional int32 max_trees = 22 [ default = 10 ];
-    optional int32 max_pairs = 23 [ default = 0 ];
-    optional bool all_possible_pairs = 35 [ default = true ];
-    repeated Tuple_string_string specific_pairs = 36 ;
-    optional bool group_target_value = 25 [ default = false ];
-    optional string discretization_method = 26 [ default = "MODL" ];
-    optional int32 min_interval_frequency = 27 [ default = 0 ];
-    optional int32 max_intervals = 28 [ default = 0 ];
-    optional string grouping_method = 29 [ default = "MODL" ];
-    optional int32 min_group_frequency = 30 [ default = 0 ];
-    optional int32 max_groups = 31 [ default = 0 ];
-    optional string results_prefix = 32 [ default = "" ];
+    oneof v1 {
+        string dictionary_file_path = 1; // default = ""
+        bytes byte_dictionary_file_path = 2;
+    };
+    oneof v2 {
+        string dictionary_name = 3; // default = ""
+        bytes byte_dictionary_name = 4;
+    };
+    oneof v3 {
+        string data_table_path = 5; // default = ""
+        bytes byte_data_table_path = 6;
+    };
+    //required StringLike target_variable = 4;
+    oneof v4 {
+        string target_variable = 7; // default = ""
+        bytes byte_target_variable = 8;
+    };
+    //required StringLike results_dir = 5;
+    oneof v5 {
+        string results_dir = 9; // default = ""
+        bytes byte_results_dir = 10;
+    };
+    optional bool detect_format = 11 [ default = true ];
+    optional bool header_line = 12 [ default = true ];
+    optional string field_separator = 13 [ default = "" ];
+    optional double sample_percentage = 14 [ default = 100.0 ];
+    optional string sampling_mode = 15 [ default = "Include sample" ];
+    optional string test_database_mode = 16 [ default = "Complementary" ];
+    optional string selection_variable = 17 [ default = "" ];
+    optional string selection_value = 18 [ default = "" ];
+    repeated DatapathParam additional_data_table = 19;
+    oneof v6 {
+        string main_target_value = 20; // default = ""
+        bytes byte_main_target_value = 21;
+    };
+    optional bool snb_predictor = 22 [ default = true ];
+    optional int32 univariate_predictor_number = 23 [ default = 0 ];
+    optional int32 max_evaluated_variables = 24 [ default = 0 ];
+    optional int32 max_selected_variables = 25 [ default = 0 ];
+    optional int32 max_constructed_variables = 26 [ default = 0 ];
+    repeated ConstructionRule construction_rule = 27 ;
+    optional int32 max_trees = 28 [ default = 10 ];
+    optional int32 max_pairs = 29 [ default = 0 ];
+    optional bool all_possible_pairs = 30 [ default = true ];
+    repeated PairParam specific_pair = 31 ;
+    optional bool group_target_value = 32 [ default = false ];
+    optional string discretization_method = 33 [ default = "MODL" ];
+    optional int32 min_interval_frequency = 34 [ default = 0 ];
+    optional int32 max_intervals = 35 [ default = 0 ];
+    optional string grouping_method = 36 [ default = "MODL" ];
+    optional int32 min_group_frequency = 37 [ default = 0 ];
+    optional int32 max_groups = 38 [ default = 0 ];
+    optional string results_prefix = 39 [ default = "" ];
+    optional string dummy_value = 40;
 }
 
 message TrainRecoder {

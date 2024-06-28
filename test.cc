@@ -89,9 +89,13 @@ int main(int argc, char* argv[]) {
 
       std::string textData;
       //google::protobuf::TextFormat::PrintToString(opB, &textData);
-      google::protobuf::util::MessageToJsonString(params, &textData);
+      google::protobuf::json::PrintOptions options;
+      options.always_print_fields_with_no_presence = true;
+      google::protobuf::util::MessageToJsonString(params, &textData, options);
 
       cout << textData << endl;
+
+      cout << "Optional string value is: " << params.optional_string_param() << endl;
     }
   }
 }

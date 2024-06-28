@@ -1,9 +1,11 @@
 version: v2
 plugins:
   - protoc_builtin: java
-    out: gen/java/src/main/java
+    out: gen/java
   - protoc_builtin: cpp
     out: gen/cpp
+  - protoc_builtin: python
+    out: gen/python
   - local: protoc-gen-go
     out: gen/go
     opt: paths=source_relative

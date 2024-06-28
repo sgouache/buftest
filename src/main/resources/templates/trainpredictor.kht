@@ -1,0 +1,36 @@
+ClassManagement.OpenFile // Open...
+ClassFileName __dictionaryFilePath__ // Dictionary file
+OK // Open
+ClassManagement.ClassName __dictionaryName__
+
+LOOP __additionalDataTable__
+TrainDatabase.DatabaseFiles.List.Key __dataPath__
+TrainDatabase.DatabaseFiles.DataTableName __filePath__
+END LOOP
+
+TrainDatabase.SampleNumberPercentage __samplePercentage__  // Sample percentage
+
+IF __detectFormat__
+TrainDatabase.DatabaseFormatDetector.DetectFileFormat
+END IF
+
+// Target variable
+AnalysisSpec.TargetAttributeName __targetVariable__ // May be empty string
+AnalysisSpec.MainTargetModality __mainTargetValue__
+
+// Feature engineering
+AnalysisSpec.PredictorsSpec.ConstructionSpec.MaxTreeNumber __maxTrees__
+AnalysisSpec.PredictorsSpec.ConstructionSpec.MaxAttributePairNumber __maxPairs__
+AnalysisSpec.PredictorsSpec.AdvancedSpec.InspectAttributePairsParameters
+AllAttributePairs __allPossiblePairs__
+LOOP __specificPair__
+SpecificAttributePairs.InsertItemAfter
+SpecificAttributePairs.FirstName
+SpecificAttributePairs.SecondName
+END LOOP
+Exit
+
+ComputeStats // Analyse database
+
+Exit // Close
+OK // Close
