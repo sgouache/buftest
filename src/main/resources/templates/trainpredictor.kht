@@ -1,17 +1,24 @@
+// Dictionary file and class settings
 ClassManagement.OpenFile // Open...
 ClassFileName __dictionaryFilePath__ // Dictionary file
-OK // Open
-ClassManagement.ClassName __dictionaryName__
+OK
+// <- Open
+
+// Train/test database settings
+TrainDatabase.ClassName __dictionaryName__
+TrainDatabase.DatabaseSpec.Data.DatabaseFiles.List.Key       // List item selection
+TrainDatabase.DatabaseSpec.Data.DatabaseFiles.DataTableName __dataTablePath__
 
 LOOP __additionalDataTable__
-TrainDatabase.DatabaseFiles.List.Key __dataPath__
-TrainDatabase.DatabaseFiles.DataTableName __filePath__
+TrainDatabase.DatabaseSpec.Data.DatabaseFiles.List.Key __dataPath__
+TrainDatabase.DatabaseSpec.Data.DatabaseFiles.DataTableName __filePath__
 END LOOP
 
-TrainDatabase.SampleNumberPercentage __samplePercentage__  // Sample percentage
+// Rem: do we allow missing params?
+TrainDatabase.DatabaseSpec.Sampling.SampleNumberPercentage  __samplePercentage__  // Sample percentage
 
 IF __detectFormat__
-TrainDatabase.DatabaseFormatDetector.DetectFileFormat
+TrainDatabase.DatabaseSpec.Data.DatabaseFormatDetector.DetectFileFormat
 END IF
 
 // Target variable
@@ -19,16 +26,35 @@ AnalysisSpec.TargetAttributeName __targetVariable__ // May be empty string
 AnalysisSpec.MainTargetModality __mainTargetValue__
 
 // Feature engineering
+AnalysisSpec.PredictorsSpec.ConstructionSpec.MaxTextFeatureNumber __maxTextFeatures__
 AnalysisSpec.PredictorsSpec.ConstructionSpec.MaxTreeNumber __maxTrees__
 AnalysisSpec.PredictorsSpec.ConstructionSpec.MaxAttributePairNumber __maxPairs__
 AnalysisSpec.PredictorsSpec.AdvancedSpec.InspectAttributePairsParameters
 AllAttributePairs __allPossiblePairs__
 LOOP __specificPair__
 SpecificAttributePairs.InsertItemAfter
-SpecificAttributePairs.FirstName
-SpecificAttributePairs.SecondName
+SpecificAttributePairs.FirstName __pairParam1__
+SpecificAttributePairs.SecondName __pairParam2__
 END LOOP
 Exit
+
+
+
+
+//  Text feature parameters
+AnalysisSpec.PredictorsSpec.AdvancedSpec.InspectTextFeaturesParameters 
+TextFeatures __textFeatures__
+Exit
+
+
+// Data preparation (discretization & grouping) settings
+AnalysisSpec.PreprocessingSpec.TargetGrouped __groupTargetValue__
+AnalysisSpec.PreprocessingSpec.InspectAdvancedParameters
+DiscretizerUnsupervisedMethodName __discretizationMethod__
+GrouperUnsupervisedMethodName __groupingMethod__
+Exit
+
+
 
 ComputeStats // Analyse database
 

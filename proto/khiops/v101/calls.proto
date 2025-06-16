@@ -32,23 +32,13 @@ message OperationB{
     repeated TupleAlt table = 1;
 }
 
-message PairParam {
-    oneof t1 {
-        string pair_string_param1 = 1;
-        bytes byte_pair_string_param1 = 2;
-    }
-    oneof t2 {
-        string pair_string_param2 = 3;
-        bytes byte_pair_string_param2 = 4;
-    }
-}
-
 message SingletonParam {
     oneof t1 {
         string singleton_string_param = 1;
         bytes singleton_string_param_byte = 2;
     }
 }
+
 
 message DatapathParam {
     oneof t1 {
@@ -58,6 +48,17 @@ message DatapathParam {
     oneof t2 {
         string file_path = 3;
         bytes byte_file_path = 4;
+    }
+}
+
+message PairParam {
+    oneof t1 {
+        string pair_param1 = 1;
+        bytes byte_pair_param1 = 2;
+    }
+    oneof t2 {
+        string pair_param2 = 3;
+        bytes byte_pair_param2 = 4;
     }
 }
 
@@ -260,7 +261,6 @@ message TrainCoclustering {
     optional string results_prefix = 15 [ default = "" ];
 }
 
-// TODO reecrire pour avoir des oneof dans la structure racine pour tous les stringlike
 message ConstructionRule {
     required string rule = 1;
 }
@@ -278,12 +278,10 @@ message TrainPredictor {
         string data_table_path = 5; // default = ""
         bytes byte_data_table_path = 6;
     };
-    //required StringLike target_variable = 4;
     oneof v4 {
         string target_variable = 7; // default = ""
         bytes byte_target_variable = 8;
     };
-    //required StringLike results_dir = 5;
     oneof v5 {
         string results_dir = 9; // default = ""
         bytes byte_results_dir = 10;
@@ -307,6 +305,8 @@ message TrainPredictor {
     optional int32 max_selected_variables = 25 [ default = 0 ];
     optional int32 max_constructed_variables = 26 [ default = 0 ];
     repeated ConstructionRule construction_rule = 27 ;
+    optional int32 max_text_features = 61 [ default = 10000 ];
+    optional string text_features = 62 [ default = "word" ];
     optional int32 max_trees = 28 [ default = 10 ];
     optional int32 max_pairs = 29 [ default = 0 ];
     optional bool all_possible_pairs = 30 [ default = true ];
@@ -319,7 +319,7 @@ message TrainPredictor {
     optional int32 min_group_frequency = 37 [ default = 0 ];
     optional int32 max_groups = 38 [ default = 0 ];
     optional string results_prefix = 39 [ default = "" ];
-    optional string dummy_value = 40;
+    optional string dummy_value = 40; // Appears in JSON iif explicitly set
 }
 
 message TrainRecoder {

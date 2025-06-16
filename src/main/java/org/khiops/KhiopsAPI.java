@@ -24,6 +24,13 @@ import com.google.protobuf.Message.Builder;
 
 public class KhiopsAPI {
 
+    public void train(TrainPredictor message) {
+        KhiopsAPI api = new KhiopsAPI();
+        InputStream is = api.getFileFromResourceAsStream("templates/trainpredictor.kht");
+
+    }
+
+
     public static void main(String[] args) throws IOException {
         // Extract json from params
         TrainPredictor message = TrainPredictor.newBuilder()
@@ -44,15 +51,24 @@ public class KhiopsAPI {
             .setByteFilePath(ByteString.copyFrom("Some other bytes".getBytes()))
             .build()
         )
+        .setGroupTargetValue(true)
+        .setMaxTrees(5)
         .build();
+
+        //KhiopsAPI.call(message);
 
         String json = messageToJson(message);
         //String json = com.google.protobuf.util.JsonFormat.printer().includingDefaultValueFields().print(message);
         //String json = com.google.protobuf.util.JsonFormat.printer().alwaysPrintFieldsWithNoPresence().print(message);
         System.out.println(json);
+        java.nio.file.Files.write(Paths.get("/tmp/output.json"), json.getBytes(StandardCharsets.UTF_8));
 
         KhiopsAPI api = new KhiopsAPI();
         InputStream is = api.getFileFromResourceAsStream("templates/trainpredictor.kht");
+
+
+        // Here comes Khiops invocation
+        // khiops -j myjson -i scenariotemplate
 
         //printInputStream(is);
 
