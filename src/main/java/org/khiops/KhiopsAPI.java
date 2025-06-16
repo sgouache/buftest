@@ -10,8 +10,8 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
 
-import org.khiops.v101.Calls.DatapathParam;
-import org.khiops.v101.Calls.TrainPredictor;
+import org.khiops.Calls.TrainPredictor;
+import org.khiops.Calls.TrainPredictor.TrainPredictorAdditionalDataTablesTuple;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors.Descriptor;
@@ -34,21 +34,21 @@ public class KhiopsAPI {
     public static void main(String[] args) throws IOException {
         // Extract json from params
         TrainPredictor message = TrainPredictor.newBuilder()
-        .setByteDictionaryFilePath(ByteString.copyFrom("Whatever you want!".getBytes()))
+        .setBytesDictionaryFilePath(ByteString.copyFrom("Whatever you want!".getBytes()))
         .setDictionaryName("xxx")
         .setDataTablePath("zzz")  
-        .setByteTargetVariable(ByteString.copyFrom(new byte[] { (byte)75, (byte)233, (byte)107, (byte)233 }))
-        .setByteResultsDir(ByteString.copyFrom("xxx".getBytes()))
-        .addAdditionalDataTable(
-            DatapathParam.newBuilder()
+        .setBytesTargetVariable(ByteString.copyFrom(new byte[] { (byte)75, (byte)233, (byte)107, (byte)233 }))
+        .setBytesAnalysisReportFilePath(ByteString.copyFrom("xxx".getBytes()))
+        .addAdditionalDataTables(
+            TrainPredictorAdditionalDataTablesTuple.newBuilder()
             .setDataPath("xxx")
             .setFilePath("yyy")
             .build()
         )
-        .addAdditionalDataTable(
-            DatapathParam.newBuilder()
-            .setByteDataPath(ByteString.copyFrom(new byte[] { (byte)233 }))
-            .setByteFilePath(ByteString.copyFrom("Some other bytes".getBytes()))
+        .addAdditionalDataTables(
+            TrainPredictorAdditionalDataTablesTuple.newBuilder()
+            .setBytesDataPath(ByteString.copyFrom(new byte[] { (byte)233 }))
+            .setBytesFilePath(ByteString.copyFrom("Some other bytes".getBytes()))
             .build()
         )
         .setGroupTargetValue(true)
