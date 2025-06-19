@@ -1,10 +1,6 @@
 package org.khiops;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.HashSet;
@@ -24,14 +20,31 @@ import com.google.protobuf.Message.Builder;
 
 public class KhiopsAPI {
 
-    public void train(TrainPredictor message) {
-        KhiopsAPI api = new KhiopsAPI();
-        InputStream is = api.getFileFromResourceAsStream("templates/trainpredictor.kht");
+    public static void train(TrainPredictor message) throws InvalidProtocolBufferException {
+        String json = messageToJson(message);
+        //String json = com.google.protobuf.util.JsonFormat.printer().includingDefaultValueFields().print(message);
+        //String json = com.google.protobuf.util.JsonFormat.printer().alwaysPrintFieldsWithNoPresence().print(message);
+        System.out.println(json);
+        try {
+            java.nio.file.Files.write(Paths.get("/tmp/output.json"), json.getBytes(StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
+        try {
+            KhiopsTaskRunner.runStandardTask("test", "khiops", "templates/trainpredictor.kht", json, false);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         // Extract json from params
         TrainPredictor message = TrainPredictor.newBuilder()
         .setBytesDictionaryFilePath(ByteString.copyFrom("Whatever you want!".getBytes()))
@@ -45,47 +58,30 @@ public class KhiopsAPI {
             .setFilePath("yyy")
             .build()
         )
-        .addAdditionalDataTables(
+/*         .addAdditionalDataTables(
             TrainPredictorAdditionalDataTablesTuple.newBuilder()
             .setBytesDataPath(ByteString.copyFrom(new byte[] { (byte)233 }))
             .setBytesFilePath(ByteString.copyFrom("Some other bytes".getBytes()))
             .build()
         )
-        .setGroupTargetValue(true)
+ */        .setGroupTargetValue(true)
         .setMaxTrees(5)
-        .build();
+
+
+        .setMemoryLimitMb(1024) // FIXME: needed until we get a recent khiops build!
+        .setMaxCores(4)
+        .setTempDir("/tmp")
+
+        .build(); 
 
         //KhiopsAPI.call(message);
+        try {
+            train(message);
+        } catch (InvalidProtocolBufferException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
-        String json = messageToJson(message);
-        //String json = com.google.protobuf.util.JsonFormat.printer().includingDefaultValueFields().print(message);
-        //String json = com.google.protobuf.util.JsonFormat.printer().alwaysPrintFieldsWithNoPresence().print(message);
-        System.out.println(json);
-        java.nio.file.Files.write(Paths.get("/tmp/output.json"), json.getBytes(StandardCharsets.UTF_8));
-
-        KhiopsAPI api = new KhiopsAPI();
-        InputStream is = api.getFileFromResourceAsStream("templates/trainpredictor.kht");
-
-
-        // Here comes Khiops invocation
-        // khiops -j myjson -i scenariotemplate
-
-        //printInputStream(is);
-
-        ScenarioTemplate template = ScenarioTemplate.parseFromInputStream(is);
-        System.out.println(template);
-        //String renderedTemplate = ScenarioTemplate.render(is, json);
-        ByteBuffer rendered = ByteBuffer.allocate(10*1024);
-        template.render(json, rendered);
-        //System.out.println(Charset.defaultCharset().decode(rendered).toString());
-        System.out.println("Final output: "+rendered.position());
-        System.out.println(new String(rendered.array()));
-        
-        byte[] output = new byte[rendered.position()];
-        int len = rendered.position();
-        rendered.rewind();
-        rendered.get(output, 0, len);
-        java.nio.file.Files.write(Paths.get("/tmp/output.kh"), output);
     }
 
     public static String messageToJson(GeneratedMessage message) throws InvalidProtocolBufferException {
@@ -137,37 +133,4 @@ public class KhiopsAPI {
         return json;
     }
 
-    // get a file from the resources folder
-    // works everywhere, IDEA, unit test and JAR file.
-    private InputStream getFileFromResourceAsStream(String fileName) {
-
-        // The class loader that loaded the class
-        ClassLoader classLoader = getClass().getClassLoader();
-        InputStream inputStream = classLoader.getResourceAsStream(fileName);
-
-        // the stream holding the file content
-        if (inputStream == null) {
-            throw new IllegalArgumentException("file not found! " + fileName);
-        } else {
-            return inputStream;
-        }
-    }
-
-    // print input stream
-    private static void printInputStream(InputStream is) {
-
-        try (InputStreamReader streamReader =
-                    new InputStreamReader(is, StandardCharsets.UTF_8);
-             BufferedReader reader = new BufferedReader(streamReader)) {
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
 }
