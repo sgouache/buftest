@@ -41,6 +41,9 @@ sourceSets {
         java {
             srcDirs('gen/java')
         }
+        resources {
+            srcDirs('gen/resources')
+        }
     }
     test {
         java {

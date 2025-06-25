@@ -2,6 +2,7 @@ package org.khiops;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -16,10 +17,20 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import com.google.protobuf.ByteString;
+import com.google.protobuf.Descriptors.Descriptor;
+import com.google.protobuf.Descriptors.FieldDescriptor;
+import com.google.protobuf.Descriptors.OneofDescriptor;
+import com.google.protobuf.GeneratedMessage;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.Message;
+import com.google.protobuf.Message.Builder;
 
 
 public class KhiopsTaskRunner {
@@ -85,7 +96,55 @@ public class KhiopsTaskRunner {
         }
     }
 
-    public static void runStandardTask(String name, String tool, String scenarioResourcePath, String localsJson, boolean nopOutputScenario) throws IOException, InterruptedException {
+    private static Object[] extractDetectFormatResults(String logFilePath) throws IOException, KhiopsRuntimeError {
+        // Parse the log file to obtain the header_line and field_separator parameters
+        // Notes:
+        // - If there is an error the run method will raise an exception; so at this stage we
+        //   have a warning in the worst case.
+        // - The contents of this Khiops execution are always ASCII
+        BufferedReader logFile = new BufferedReader(new FileReader(logFilePath));
+        
+        List<String> logFileLines = new ArrayList<>();
+        String line;
+        while ((line = logFile.readLine()) != null) {
+            logFileLines.add(line);
+        }
+        logFile.close();
+
+        // Obtain the first line that contains the format spec
+        Boolean headerLine = null;
+        String fieldSeparator = null;
+        String formatLinePattern = "File format detected: ";
+        for (String currentLine : logFileLines) {
+            if (currentLine.startsWith(formatLinePattern)) {
+                String rawFormatSpec = currentLine.trim().replace(formatLinePattern, "");
+                String[] formatParts = rawFormatSpec.split(" and field separator ");
+                String headerLineStr = formatParts[0];
+                String fieldSeparatorStr = formatParts[1];
+                
+                headerLine = headerLineStr.equals("header line");
+                if (fieldSeparatorStr.equals("tabulation")) {
+                    fieldSeparator = "\t";
+                } else {
+                    fieldSeparator = String.valueOf(fieldSeparatorStr.charAt(1));
+                }
+                break;
+            }
+        }
+
+        // Fail if there was no file format in the log
+        if (headerLine == null || fieldSeparator == null) {
+            throw new KhiopsRuntimeError(
+                "Khiops did not write the log line with the data table file format."
+            );
+        }
+        System.out.println("Header line: " + headerLine);
+        System.out.println("Separator: "+ fieldSeparator + "EOL");
+
+        return new Object[] { headerLine, fieldSeparator };
+    }
+
+    public static Object[] runStandardTask(String name, String tool, String scenarioResourcePath, String localsJson, boolean nopOutputScenario) throws IOException, InterruptedException {
         // Parse JSON string to Map
         Map<String, Object> localsDict = parseJsonToMap(localsJson);
 
@@ -118,7 +177,7 @@ public class KhiopsTaskRunner {
         // Load scenario template
         String scenario = readStream(getFileFromResourceAsStream(scenarioResourcePath));
 
-        trace(String.format("Run %s (%s, %d) %s", name, tool, scenario.length(), localsDict));
+        trace(String.format("Run name (%s, %d) %s", tool, scenario.length(), localsDict));
         trace(" Special params: " + specialValues);
 
         // Initialize variables with defaults
@@ -226,6 +285,14 @@ public class KhiopsTaskRunner {
         if (!stderrFilePath.isEmpty()) {
             Files.write(Paths.get(stderrFilePath), stderr.getBytes(StandardCharsets.UTF_8));
         }
+
+        Object[] result = {};
+        if (name.equalsIgnoreCase("detect_data_table_format"))
+            result = extractDetectFormatResults(logFilePath);
+
+        // TODO cleanup trace & logfile
+
+        return result;
     }
 
     // Helper: read InputStream fully as String
@@ -295,5 +362,54 @@ public class KhiopsTaskRunner {
 
     private static String escapeJson(String s) {
         return s.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "\\r");
+    }
+
+    public static String messageToJson(GeneratedMessage message) throws InvalidProtocolBufferException {
+        HashSet<FieldDescriptor> fields = new HashSet<>();
+    
+        Builder builder = message.toBuilder();
+    
+        // Iterate over message fields
+        Descriptor descriptor = builder.getDescriptorForType();
+        StringBuffer str = new StringBuffer();
+        for (FieldDescriptor field : descriptor.getFields()) {
+            String fieldName = field.getName();
+            Object fieldValue = builder.getField(field);
+    
+            // TODO si aucun des oneof n'est défini, forcer l'attribut string à la valeur ""
+            //System.out.println("Attribut: " + fieldName + ", valeur: " + fieldValue + "\n");
+            OneofDescriptor oneof = field.getContainingOneof();
+            if (oneof != null && oneof.getFields().size() == 2 && field.getJavaType() == FieldDescriptor.JavaType.STRING && fieldValue.equals("")) {
+                // Drop current field from oneof
+                List<FieldDescriptor> filtered = oneof.getFields().stream()
+                .filter(f -> !field.equals(f))
+                .collect(java.util.stream.Collectors.toList());
+    
+                if (filtered.get(0).getName().equals("byte_"+fieldName)) {
+                    ByteString s = (ByteString)message.getField(filtered.get(0));
+    
+                    System.out.println(s);
+                    if (s.size() == 0) {
+                        System.out.println("Forcing value of "+fieldName+" to \"\"");
+                        builder.setField(field, "");
+                        fields.add(field);
+                    }
+                }
+            }
+    
+    
+            if ((field.hasPresence() && message.hasField(field)) || field.hasDefaultValue() || field.isRepeated()) {
+                //str.append("Attribut : " + fieldName + ", Valeur : " + fieldValue + "\n");
+                //message2.getF().putIfAbsent(field, fieldValue);
+                fields.add(field);
+            }
+        }
+        //System.out.println(str);
+        Message updatedMessage = builder.build();
+    
+        // Transformer le message en JSON
+        //String json = com.google.protobuf.util.JsonFormat.printer().includingDefaultValueFields(fields).print(message);
+        String json = com.google.protobuf.util.JsonFormat.printer().includingDefaultValueFields(fields).print(updatedMessage);
+        return json;
     }
 }

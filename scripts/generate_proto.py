@@ -59,7 +59,7 @@ def generate_proto_from_json_path(input_json_path):
             lines.append('    string {} = {} [default = "{}"];'.format(arg_name, field_number, default_str))
             field_number += 1
             lines.append('    // {}' .format(description))
-            lines.append('    bytes bytes_{} = {};'.format(arg_name, field_number))
+            lines.append('    bytes byte_{} = {};'.format(arg_name, field_number))
             lines.append('  }')
         elif arg_type == "bool":
             default_value = ' [default = {}]'.format(default.lower()) if default != 'None' else ''
@@ -79,7 +79,6 @@ def generate_proto_from_json_path(input_json_path):
             if tuple_fields:
                 nested_message_name = "{}_{}_tuple".format(name, arg_name)
                 nested_message_name = to_pascal_case(nested_message_name)
-                lines.append('  // {}' .format(description))
                 lines.append('  message {} {{'.format(nested_message_name))
                 for field in tuple_fields:
                     if not isinstance(field, dict):
@@ -98,7 +97,7 @@ def generate_proto_from_json_path(input_json_path):
                         lines.append('      string {} = {} [default = "{}"];'.format(fname, field_number, default_f))
                         field_number += 1
                         lines.append('      // {}' .format(f_desc))
-                        lines.append('      bytes bytes_{} = {};'.format(fname, field_number))
+                        lines.append('      bytes byte_{} = {};'.format(fname, field_number))
                         lines.append('    }')
                     elif ftype == "int":
                         def_val = default_f if default_f is not None else 0
@@ -112,6 +111,7 @@ def generate_proto_from_json_path(input_json_path):
                         print(f"Warning: Unsupported tuple field type '{ftype}'. Skipping.")
                     field_number += 1
                 lines.append('  }\n')
+                lines.append('  // {}' .format(description))
                 lines.append('  repeated {} {} = {};'.format(nested_message_name, arg_name, field_number))
             else:
                 # Default to list of strings
