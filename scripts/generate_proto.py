@@ -184,7 +184,10 @@ def convert_json_folder(input_json_folder, output_proto_folder):
     lines.append('}')
 
     proto_code = "\n".join(lines)
+    output_proto_folder = os.path.join(output_proto_folder, 'khiops', 'v11')
+    os.makedirs(output_proto_folder)
     output_proto_path = os.path.join(output_proto_folder, 'calls.proto')
+
     try:
         with open(output_proto_path, 'w', encoding='utf-8') as f:
             f.write(proto_code)
