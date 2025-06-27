@@ -17,5 +17,9 @@ jobs:
           # Add the parameter token as a secret in your repository settings
           # to authenticate with the Buf Schema Registry.
           setup_only: true
+      - uses: actions/setup-go@v5
+        with:
+          go-version: 'stable' # The Go version to download (if necessary) and use.
+      - run: go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest
       - run: buf generate --error-format=github-actions
       - run: ls -l gen
