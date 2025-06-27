@@ -21,10 +21,10 @@ import com.google.protobuf.InvalidProtocolBufferException;
 public class KhiopsAPI {
 ''')
     
-    for entry in os.scandir(input_json_folder):
-        print('processing {}'.format(entry.path))
+    for entry in sorted(map(lambda x: x.path, os.scandir(input_json_folder))):
+        print('processing {}'.format(entry))
         try:
-            with open(entry.path, 'r', encoding='utf-8') as f:
+            with open(entry, 'r', encoding='utf-8') as f:
                 json_data = json.load(f)
         except Exception as e:
             print(f"Error reading JSON file: {e}")

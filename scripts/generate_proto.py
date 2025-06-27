@@ -158,9 +158,10 @@ def convert_json_folder(input_json_folder, output_proto_folder):
     lines.append('option go_package = "khiops.org/proto/khiops";\n')
 
     messages = []
-    for entry in os.scandir(input_json_folder):
-        print('processing {}'.format(entry.path))
-        msg_name, field_name,  proto = generate_proto_from_json_path(entry.path)
+    for entry in sorted(map(lambda x: x.path,
+                    os.scandir(input_json_folder))):
+        print('processing {}'.format(entry))
+        msg_name, field_name,  proto = generate_proto_from_json_path(entry)
         lines += proto
         # FIXME: should be returned by gen_proto function
         messages.append({'name': msg_name, 'id': field_name})
