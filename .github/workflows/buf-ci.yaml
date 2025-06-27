@@ -17,5 +17,5 @@ jobs:
           # Add the parameter token as a secret in your repository settings
           # to authenticate with the Buf Schema Registry.
           setup_only: true
-      - run: ls -l
       - run: buf build --error-format=github-actions
+      - run: ls -l gen
