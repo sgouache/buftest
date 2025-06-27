@@ -15,6 +15,7 @@ jobs:
       - uses: bufbuild/buf-action@v1
         with:
           push_disable_create: true
+          input: .
           # Publishing schema changes to the BSR requires a BSR authentication token.
           # token: ${{ secrets.BUF_TOKEN }}
           # Include this line if you only want to set up the Action and do nothing else.
