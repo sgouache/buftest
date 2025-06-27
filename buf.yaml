@@ -1,18 +1,18 @@
 version: v2
 
 modules:
-  - path: proto/khiops/v11
+  - path: proto
     lint:
       use:
         - STANDARD
       except:
         - FIELD_NOT_REQUIRED
         - PACKAGE_NO_IMPORT_CYCLE
-      #ignore:
-      #  - proto/google
-      #ignore_only:
-      #  MESSAGE_PASCAL_CASE:
-      #    - proto/khiops/v101/basics.proto
+      ignore:
+        - proto/google
+      ignore_only:
+        MESSAGE_PASCAL_CASE:
+          - proto/khiops/v101/basics.proto
       disallow_comment_ignores: true
     breaking:
       use:
