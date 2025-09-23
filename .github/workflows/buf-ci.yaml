@@ -1,0 +1,29 @@
+name: Buf CI
+on:
+  push:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+  delete:
+permissions:
+  contents: read
+  pull-requests: write
+jobs:
+  buf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: bufbuild/buf-action@v1
+        with:
+          # Add the parameter token as a secret in your repository settings
+          # to authenticate with the Buf Schema Registry.
+          setup_only: true
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v3
+      - uses: actions/setup-go@v5
+        with:
+          go-version: 'stable' # The Go version to download (if necessary) and use.
+      - run: |
+            go install github.com/golang/protobuf/protoc-gen-go@latest
+            go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest
+      - run: buf generate --error-format=github-actions
+      - run: ls -l gen
